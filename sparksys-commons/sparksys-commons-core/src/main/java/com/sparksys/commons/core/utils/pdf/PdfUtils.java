@@ -396,18 +396,15 @@ public class PdfUtils {
         File file = new File(pdfPath);
         PDDocument pdDocument;
         try {
-            // order目录
             String orderPath = file.getParent();
             String fileName = file.getName();
             int index = fileName.indexOf(".");
             fileName = fileName.substring(0, index);
-            // 转换后的img目录
             String imgPath = orderPath + File.separator + fileName + ".png";
-            List<BufferedImage> pnglist = new ArrayList<BufferedImage>();
+            List<BufferedImage> pnglist = new ArrayList<>();
             pdDocument = PDDocument.load(file);
             PDFRenderer renderer = new PDFRenderer(pdDocument);
             for (int i = 0; i < pdDocument.getNumberOfPages(); i++) {
-                /* 第二位参数越大转换后越清晰，相对转换速度越慢 */
                 BufferedImage image = renderer.renderImageWithDPI(i, 100);
                 pnglist.add(image);
             }
@@ -421,49 +418,44 @@ public class PdfUtils {
     }
 
     public void imageMerging(List<BufferedImage> pnglist, String outPath) throws IOException {
-        int height = 0, // 总高度
-                _width = 0, // 临时宽度
-                maxWidth = 0, // 最大宽度
-                _height = 0, // 临时的高度 , 或保存偏移高度
-                __height = 0, // 临时的高度，主要保存每个高度
-                picNum = pnglist.size();// 图片的数量
-        int[] heightArray = new int[picNum]; // 保存每个文件的高度
-        int[] widthArray = new int[picNum]; // 保存每个文件的宽度
-        BufferedImage buffer = null; // 保存图片流
-        List<int[]> imgRGB = new ArrayList<int[]>(); // 保存所有的图片的RGB
-        int[] _imgRGB; // 保存一张图片中的RGB数据
+        int height = 0,
+                _width = 0,
+                maxWidth = 0,
+                _height,
+                __height,
+                picNum = pnglist.size();
+        int[] heightArray = new int[picNum];
+        int[] widthArray = new int[picNum];
+        BufferedImage buffer;
+        List<int[]> imgRGB = new ArrayList<>();
+        int[] _imgRGB;
         for (int i = 0; i < picNum; i++) {
             buffer = pnglist.get(i);
             if (buffer.getWidth() > maxWidth) {
-                // 获取最大宽度
                 maxWidth = buffer.getWidth();
             }
         }
         for (int i = 0; i < picNum; i++) {
             buffer = pnglist.get(i);
-            heightArray[i] = _height = buffer.getHeight();// 图片高度
-            widthArray[i] = _width = buffer.getWidth();// 图片宽度
-            height += _height; // 获取总高度
-            _imgRGB = new int[_width * _height];// 从图片中读取RGB
+            heightArray[i] = _height = buffer.getHeight();
+            widthArray[i] = _width = buffer.getWidth();
+            height += _height;
+            _imgRGB = new int[_width * _height];
             _imgRGB = buffer.getRGB(0, 0, _width, _height, _imgRGB, 0, _width);
             imgRGB.add(_imgRGB);
         }
-        _height = 0; // 设置偏移高度为0
-        // 生成新图片
+        _height = 0;
         BufferedImage imageResult = new BufferedImage(_width, height, BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < picNum; i++) {
             __height = heightArray[i];
             _width = widthArray[i];
             if (i != 0) {
-                _height += heightArray[i - 1]; // 计算偏移高度 ，因高度不一致，所以i-1
+                _height += heightArray[i - 1];
             }
-            // imageResult.setRGB(0, _height, widthArray[i], __height, imgRGB.get(i), 0,
-            // widthArray[i]); // 写入流中
-            // 居中，前两个参数为起始的宽度、高度
-            imageResult.setRGB((maxWidth - _width) / 2, _height, _width, __height, imgRGB.get(i), 0, _width); // 写入流中
+            imageResult.setRGB((maxWidth - _width) / 2, _height, _width, __height, imgRGB.get(i), 0, _width);
         }
         File outFile = new File(outPath);
-        ImageIO.write(imageResult, "png", outFile);// 写图片
+        ImageIO.write(imageResult, "png", outFile);
     }
 
 }
