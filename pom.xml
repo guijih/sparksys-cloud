@@ -58,7 +58,7 @@
         <activiti.version>6.0.0</activiti.version>
         <apache.xmlgraphics.version>1.7</apache.xmlgraphics.version>
 
-        <xstream.version>1.4.10</xstream.version>
+        <xstream.version>1.4.11.1</xstream.version>
     </properties>
 
     <modules>
