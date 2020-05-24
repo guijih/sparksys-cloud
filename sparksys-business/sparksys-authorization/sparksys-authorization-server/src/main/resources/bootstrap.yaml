@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: sparksys-authorization
+  profiles:
+    active: dev #默认为开发环境
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.3.3:8086
+        namespace: e026cfa9-330a-4ec8-8544-87bd279e6f23
+      config:
+        server-addr: 192.168.3.3:8086
+        namespace: e026cfa9-330a-4ec8-8544-87bd279e6f23
+        file-extension: yaml
+        prefix: ${spring.application.name}
+        enabled: true
+        shared-configs:
+          - dataId: redis.yaml
+            group: DEFAULT_GROUP
+            refresh: false
+          - dataId: actuator.yaml
+            group: DEFAULT_GROUP
+            refresh: false
